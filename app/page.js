@@ -201,8 +201,8 @@ export default function Page() {
           <div className="eyebrow">Buyer Registry &middot; ಖರೀದಿದಾರರ ನೋಂದಣಿ</div>
           <h1>
             <span className="kn-line">ಫೀಲ್ಡ್ ಮಾರ್ಷಲ್ ಕರಿಯಪ್ಪ ಕಾಲೋನಿ</span>
-            Affected Buyers — Sign the Register
-          </h1>
+            Affected Buyers — Tell Us Your Situation
+            </h1>
           <p className="sub kn">
             ಈ ಯೋಜನೆಯಿಂದ ಎಷ್ಟು ಖರೀದಿದಾರರು ಪೀಡಿತರಾಗಿದ್ದಾರೆ ಎಂಬುದರ ದಾಖಲೆ
             ಇಟ್ಟುಕೊಳ್ಳಲು ಈ ನೋಂದಣಿಯನ್ನು ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ. ಅಗತ್ಯವಿದ್ದಲ್ಲಿ
