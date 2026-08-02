@@ -203,19 +203,6 @@ export default function Page() {
             <span className="kn-line">ಫೀಲ್ಡ್ ಮಾರ್ಷಲ್ ಕರಿಯಪ್ಪ ಕಾಲೋನಿ</span>
             Affected Buyers — Tell Us Your Situation
             </h1>
-          <p className="sub kn">
-            ಈ ಯೋಜನೆಯಿಂದ ಎಷ್ಟು ಖರೀದಿದಾರರು ಪೀಡಿತರಾಗಿದ್ದಾರೆ ಎಂಬುದರ ದಾಖಲೆ
-            ಇಟ್ಟುಕೊಳ್ಳಲು ಈ ನೋಂದಣಿಯನ್ನು ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ. ಅಗತ್ಯವಿದ್ದಲ್ಲಿ
-            ಮುಂದೆ ಪೊಲೀಸ್ ಅಧೀಕ್ಷಕರಿಗೆ ಸಲ್ಲಿಸುವ ಮನವಿಗೆ ಇದನ್ನು ಬಳಸಬಹುದು.
-          </p>
-          <p className="sub">
-            We&apos;re keeping a record of how many buyers have been
-            affected by this project. This may be used later to support a
-            formal complaint to the Superintendent of Police, Vijayapura
-            District, if it becomes necessary — for now, we just need an
-            accurate count. Add your details below — it takes about a
-            minute.
-          </p>
 
           <div className="pill-row">
             <div className="register-count">
@@ -255,6 +242,20 @@ export default function Page() {
               </div>
             )}
           </div>
+
+          <p className="sub kn" style={{ marginTop: 16 }}>
+            ಈ ಯೋಜನೆಯಿಂದ ಎಷ್ಟು ಖರೀದಿದಾರರು ಪೀಡಿತರಾಗಿದ್ದಾರೆ ಎಂಬುದರ ದಾಖಲೆ
+            ಇಟ್ಟುಕೊಳ್ಳಲು ಈ ನೋಂದಣಿಯನ್ನು ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ. ಅಗತ್ಯವಿದ್ದಲ್ಲಿ
+            ಮುಂದೆ ಪೊಲೀಸ್ ಅಧೀಕ್ಷಕರಿಗೆ ಸಲ್ಲಿಸುವ ಮನವಿಗೆ ಇದನ್ನು ಬಳಸಬಹುದು.
+          </p>
+          <p className="sub">
+            We&apos;re keeping a record of how many buyers have been
+            affected by this project. This may be used later to support a
+            formal complaint to the Superintendent of Police, Vijayapura
+            District, if it becomes necessary — for now, we just need an
+            accurate count. Add your details below — it takes about a
+            minute.
+          </p>
         </div>
 
         <nav className="tab-bar">
