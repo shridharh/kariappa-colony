@@ -471,7 +471,7 @@ export default function Page() {
               <div className="num">07</div>
               <div className="field">
                 <label htmlFor="village_taluk">
-                  Village / Taluk (optional)
+                  City / Village / Taluk (optional)
                   <span className="kn-sub">ಗ್ರಾಮ / ತಾಲೂಕು</span>
                 </label>
                 <input
