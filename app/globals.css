@@ -84,27 +84,36 @@ h1 .kn-line {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 7px 14px;
-  border: 1px solid #57603c;
+  padding: 8px 16px;
+  border: 1.5px solid #e8deb8;
   border-radius: 100px;
-  font-size: 13px;
-  color: #e7e3c9;
-  background: #333c22;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #2a2e1f;
+  background: #f4efdd;
 }
 .register-count .dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: #c9a24a;
+  background: #8c6d1f;
 }
 .register-count.alert {
-  border-color: #b8543e;
-  background: #4a2a22;
-  color: #f6ddd2;
+  border-color: #c23b22;
+  background: #f4a261;
+  color: #5c2410;
 }
 .register-count.alert .dot {
-  background: #e07a5f;
+  background: #c23b22;
   animation: pulse-dot 2s ease-in-out infinite;
+}
+.register-count.info {
+  border-color: #5b7a9c;
+  background: #dceaf4;
+  color: #1f3a52;
+}
+.register-count.info .dot {
+  background: #3d6e96;
 }
 @keyframes pulse-dot {
   0%,
@@ -114,6 +123,41 @@ h1 .kn-line {
   50% {
     opacity: 0.35;
   }
+}
+
+.tab-bar {
+  border-top: 1px solid #465130;
+  margin-top: 26px;
+}
+.tab-bar-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+}
+.tab {
+  background: none;
+  border: none;
+  padding: 14px 16px 12px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #b9b692;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  transition: color 0.15s ease;
+}
+.tab .kn {
+  font-weight: 500;
+}
+.tab:hover {
+  color: #efe9d6;
+}
+.tab.active {
+  color: #f4efdd;
+  border-bottom-color: #c9a24a;
 }
 
 section.notice {
@@ -273,6 +317,115 @@ textarea:focus {
   opacity: 0;
   height: 0;
   overflow: hidden;
+}
+
+.dev-progress-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 20px 22px;
+  margin-bottom: 20px;
+}
+.dev-progress-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--olive-deep);
+  margin-bottom: 10px;
+}
+.dev-progress-pct {
+  font-family: "Fraunces", serif;
+  font-size: 22px;
+  color: var(--rust);
+}
+.dev-progress-track {
+  height: 14px;
+  background: #e8e2cb;
+  border-radius: 100px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+.dev-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c9a24a, #e8c170);
+  border-radius: 100px;
+  transition: width 0.4s ease;
+}
+.dev-progress-meta {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+.dev-form {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 22px;
+}
+.dev-form-label {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--olive-deep);
+  margin-bottom: 12px;
+}
+.percent-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.percent-btn {
+  flex: 1;
+  min-width: 64px;
+  padding: 12px 10px;
+  border: 1.5px solid #b9af8f;
+  border-radius: 2px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.percent-btn:hover {
+  border-color: var(--olive);
+}
+.percent-btn.active {
+  background: var(--olive-deep);
+  border-color: var(--olive-deep);
+  color: #f4efdd;
+}
+
+.pdf-actions {
+  margin-bottom: 16px;
+}
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--olive-deep);
+  color: #f4efdd;
+  text-decoration: none;
+  padding: 12px 18px;
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.download-btn:hover {
+  background: var(--olive);
+}
+.pdf-embed {
+  width: 100%;
+  height: 80vh;
+  min-height: 500px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+  background: #fff;
 }
 
 .submit-row {

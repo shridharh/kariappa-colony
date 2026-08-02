@@ -19,11 +19,21 @@ const initialForm = {
   website: '', // honeypot
 };
 
+const PERCENT_OPTIONS = [0, 25, 50, 75, 100];
+
 export default function Page() {
+  const [activeTab, setActiveTab] = useState('register');
+
   const [form, setForm] = useState(initialForm);
-  const [stats, setStats] = useState(null); // { total_count, total_amount, refund_pending_count, oldest_refund_days }
-  const [status, setStatus] = useState(null); // { type: 'ok' | 'err', text }
+  const [stats, setStats] = useState(null);
+  const [status, setStatus] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const [devStats, setDevStats] = useState(null);
+  const [devPercent, setDevPercent] = useState(null);
+  const [devNote, setDevNote] = useState('');
+  const [devStatus, setDevStatus] = useState(null);
+  const [devSubmitting, setDevSubmitting] = useState(false);
 
   const configured = !!supabase;
 
@@ -33,8 +43,15 @@ export default function Page() {
     if (!error && data && data[0]) setStats(data[0]);
   }
 
+  async function loadDevStats() {
+    if (!supabase) return;
+    const { data, error } = await supabase.rpc('get_development_stats');
+    if (!error && data && data[0]) setDevStats(data[0]);
+  }
+
   useEffect(() => {
     loadStats();
+    loadDevStats();
   }, []);
 
   function formatRupees(n) {
@@ -63,7 +80,6 @@ export default function Page() {
     e.preventDefault();
     setStatus(null);
 
-    // honeypot — silently drop likely bot submissions
     if (form.website.trim() !== '') return;
 
     if (!/^[0-9]{10}$/.test(form.mobile_number.trim())) {
@@ -134,6 +150,50 @@ export default function Page() {
     }
   }
 
+  async function handleDevSubmit(e) {
+    e.preventDefault();
+    setDevStatus(null);
+
+    if (devPercent === null) {
+      setDevStatus({
+        type: 'err',
+        text: 'Please select how much development you have personally observed. / ದಯವಿಟ್ಟು ಒಂದು ಆಯ್ಕೆ ಮಾಡಿ.',
+      });
+      return;
+    }
+    if (!supabase) {
+      setDevStatus({
+        type: 'err',
+        text: 'The site is not connected to the database yet.',
+      });
+      return;
+    }
+
+    setDevSubmitting(true);
+    try {
+      const { error } = await supabase.from('development_reports').insert([
+        { percent_complete: devPercent, note: devNote.trim() || null },
+      ]);
+      if (error) throw error;
+
+      setDevStatus({
+        type: 'ok',
+        text: 'Thanks — your observation has been recorded. / ಧನ್ಯವಾದಗಳು, ದಾಖಲಿಸಲಾಗಿದೆ.',
+      });
+      setDevPercent(null);
+      setDevNote('');
+      loadDevStats();
+    } catch (err) {
+      console.error(err);
+      setDevStatus({
+        type: 'err',
+        text: 'Something went wrong. Please try again. / ದೋಷ ಸಂಭವಿಸಿದೆ.',
+      });
+    } finally {
+      setDevSubmitting(false);
+    }
+  }
+
   return (
     <>
       <header className="top">
@@ -179,8 +239,45 @@ export default function Page() {
                 </span>
               </div>
             )}
+
+            {devStats && devStats.report_count > 0 && (
+              <div className="register-count info">
+                <span className="dot"></span>
+                <span>
+                  🏗 Development reported {devStats.avg_percent}% complete
+                  &middot; {devStats.report_count} report
+                  {devStats.report_count === 1 ? '' : 's'}
+                </span>
+              </div>
+            )}
           </div>
         </div>
+
+        <nav className="tab-bar">
+          <div className="tab-bar-inner">
+            <button
+              className={activeTab === 'register' ? 'tab active' : 'tab'}
+              onClick={() => setActiveTab('register')}
+              type="button"
+            >
+              Register &middot; <span className="kn">ನೋಂದಣಿ</span>
+            </button>
+            <button
+              className={activeTab === 'status' ? 'tab active' : 'tab'}
+              onClick={() => setActiveTab('status')}
+              type="button"
+            >
+              Development Status &middot; <span className="kn">ಅಭಿವೃದ್ಧಿ ಸ್ಥಿತಿ</span>
+            </button>
+            <button
+              className={activeTab === 'letter' ? 'tab active' : 'tab'}
+              onClick={() => setActiveTab('letter')}
+              type="button"
+            >
+              Complaint Letter &middot; <span className="kn">ದೂರು ಪತ್ರ</span>
+            </button>
+          </div>
+        </nav>
       </header>
 
       {!configured && (
@@ -192,297 +289,454 @@ export default function Page() {
         </div>
       )}
 
-      <div className="wrap">
-        <section className="notice">
-          <h2>
-            Your privacy &middot; <span className="kn">ಗೌಪ್ಯತೆ</span>
-          </h2>
-          <p>
-            Only the organizing group of petitioners can see submitted
-            entries — this page cannot list or search anyone else&apos;s
-            details. Your information will be compiled into the printed
-            annexure for the police complaint, where physical signatures
-            will still be collected separately before filing.
-          </p>
-          <p className="kn">
-            ಸಲ್ಲಿಸಿದ ವಿವರಗಳನ್ನು ಸಂಘಟಿಸುತ್ತಿರುವ ಖರೀದಿದಾರರ ಗುಂಪು ಮಾತ್ರ
-            ನೋಡಬಹುದು. ಈ ವಿವರಗಳನ್ನು ಪೊಲೀಸ್ ದೂರಿನ ಲಗತ್ತಿಗಾಗಿ ಸಿದ್ಧಪಡಿಸಲಾಗುವುದು;
-            ದೂರು ಸಲ್ಲಿಸುವ ಮುನ್ನ ಭೌತಿಕ ಸಹಿಯನ್ನು ಪ್ರತ್ಯೇಕವಾಗಿ ಸಂಗ್ರಹಿಸಲಾಗುವುದು.
-          </p>
-        </section>
+      {activeTab === 'register' && (
+        <div className="wrap">
+          <section className="notice">
+            <h2>
+              Your privacy &middot; <span className="kn">ಗೌಪ್ಯತೆ</span>
+            </h2>
+            <p>
+              Only the organizing group of petitioners can see submitted
+              entries — this page cannot list or search anyone else&apos;s
+              details. Your information will be compiled into the printed
+              annexure for the police complaint, where physical signatures
+              will still be collected separately before filing.
+            </p>
+            <p className="kn">
+              ಸಲ್ಲಿಸಿದ ವಿವರಗಳನ್ನು ಸಂಘಟಿಸುತ್ತಿರುವ ಖರೀದಿದಾರರ ಗುಂಪು ಮಾತ್ರ
+              ನೋಡಬಹುದು. ಈ ವಿವರಗಳನ್ನು ಪೊಲೀಸ್ ದೂರಿನ ಲಗತ್ತಿಗಾಗಿ
+              ಸಿದ್ಧಪಡಿಸಲಾಗುವುದು; ದೂರು ಸಲ್ಲಿಸುವ ಮುನ್ನ ಭೌತಿಕ ಸಹಿಯನ್ನು
+              ಪ್ರತ್ಯೇಕವಾಗಿ ಸಂಗ್ರಹಿಸಲಾಗುವುದು.
+            </p>
+          </section>
 
-        <form onSubmit={handleSubmit} autoComplete="off">
-          {/* honeypot */}
-          <div className="honeypot" aria-hidden="true">
-            <label htmlFor="website">Website</label>
-            <input
-              type="text"
-              id="website"
-              tabIndex={-1}
-              autoComplete="off"
-              value={form.website}
-              onChange={(e) => update('website', e.target.value)}
-            />
-          </div>
-
-          <div className="row-num">
-            <div className="num">01</div>
-            <div className="field">
-              <label htmlFor="full_name">
-                Full name <span className="req">*</span>
-                <span className="kn-sub">ಪೂರ್ಣ ಹೆಸರು</span>
-              </label>
+          <form onSubmit={handleSubmit} autoComplete="off">
+            <div className="honeypot" aria-hidden="true">
+              <label htmlFor="website">Website</label>
               <input
                 type="text"
-                id="full_name"
-                required
-                maxLength={120}
-                placeholder="e.g. Ramesh K. / ರಮೇಶ್ ಕೆ."
-                value={form.full_name}
-                onChange={(e) => update('full_name', e.target.value)}
+                id="website"
+                tabIndex={-1}
+                autoComplete="off"
+                value={form.website}
+                onChange={(e) => update('website', e.target.value)}
               />
             </div>
-          </div>
 
-          <div className="row-num">
-            <div className="num">02</div>
-            <div className="field">
-              <label htmlFor="mobile_number">
-                Mobile number <span className="req">*</span>
-                <span className="kn-sub">ಮೊಬೈಲ್ ಸಂಖ್ಯೆ</span>
-              </label>
-              <input
-                type="tel"
-                id="mobile_number"
-                required
-                inputMode="numeric"
-                pattern="[0-9]{10}"
-                maxLength={10}
-                placeholder="10-digit number"
-                value={form.mobile_number}
-                onChange={(e) => update('mobile_number', e.target.value)}
-              />
-              <div className="hint">
-                10 digits, no spaces &middot; used only to contact you about
-                the complaint
-              </div>
-            </div>
-          </div>
-
-          <div className="row-num">
-            <div className="num">03</div>
-            <div className="field">
-              <label htmlFor="plot_number">
-                Plot / site number
-                <span className="kn-sub">ನಿವೇಶನ ಸಂಖ್ಯೆ</span>
-              </label>
-              <input
-                type="text"
-                id="plot_number"
-                maxLength={40}
-                placeholder="e.g. Site No. 214 (leave blank if unsure)"
-                value={form.plot_number}
-                onChange={(e) => update('plot_number', e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="row-num">
-            <div className="num">04</div>
-            <div className="field">
-              <label htmlFor="applicant_status">
-                You are a <span className="req">*</span>
-                <span className="kn-sub">ನೀವು</span>
-              </label>
-              <select
-                id="applicant_status"
-                required
-                value={form.applicant_status}
-                onChange={(e) => update('applicant_status', e.target.value)}
-              >
-                <option value="" disabled>
-                  Select one
-                </option>
-                <option value="serving_army">
-                  Serving Army personnel &middot; ಸೇವೆಯಲ್ಲಿರುವ ಸೈನಿಕ
-                </option>
-                <option value="retired_army">
-                  Retired Army personnel &middot; ನಿವೃತ್ತ ಸೈನಿಕ
-                </option>
-                <option value="family">
-                  Family member of Army personnel &middot; ಸೈನಿಕರ ಕುಟುಂಬ
-                  ಸದಸ್ಯ
-                </option>
-                <option value="civilian">
-                  Civilian buyer &middot; ನಾಗರಿಕ ಖರೀದಿದಾರ
-                </option>
-                <option value="other">Other &middot; ಇತರೆ</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="row-num">
-            <div className="num">05</div>
-            <div className="field">
-              <label htmlFor="amount_paid">
-                Total amount paid so far (₹)
-                <span className="kn-sub">ಒಟ್ಟು ಪಾವತಿಸಿದ ಮೊತ್ತ</span>
-              </label>
-              <input
-                type="number"
-                id="amount_paid"
-                min="0"
-                step="1"
-                placeholder="e.g. 250000"
-                value={form.amount_paid}
-                onChange={(e) => update('amount_paid', e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="row-num">
-            <div className="num">06</div>
-            <div className="field">
-              <label htmlFor="purchase_year">
-                Year of purchase
-                <span className="kn-sub">ಖರೀದಿಸಿದ ವರ್ಷ</span>
-              </label>
-              <input
-                type="number"
-                id="purchase_year"
-                min="2015"
-                max="2026"
-                step="1"
-                placeholder="e.g. 2023"
-                value={form.purchase_year}
-                onChange={(e) => update('purchase_year', e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="row-num">
-            <div className="num">07</div>
-            <div className="field">
-              <label htmlFor="village_taluk">
-                Village / Taluk (optional)
-                <span className="kn-sub">ಗ್ರಾಮ / ತಾಲೂಕು</span>
-              </label>
-              <input
-                type="text"
-                id="village_taluk"
-                maxLength={80}
-                value={form.village_taluk}
-                onChange={(e) => update('village_taluk', e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="refund-block">
-            <div className="refund-row">
-              <input
-                type="checkbox"
-                id="refund_requested"
-                checked={form.refund_requested}
-                onChange={(e) =>
-                  update('refund_requested', e.target.checked)
-                }
-              />
-              <label htmlFor="refund_requested" className="refund-label">
-                I requested a refund / booking cancellation and have{' '}
-                <strong>not</strong> received it yet
-                <span className="kn-sub" style={{ marginTop: 4 }}>
-                  ನಾನು ಹಣ ಮರುಪಾವತಿ / ಬುಕ್ಕಿಂಗ್ ರದ್ದತಿ ಕೇಳಿದ್ದೇನೆ, ಇನ್ನೂ
-                  ಸಿಕ್ಕಿಲ್ಲ
-                </span>
-              </label>
-            </div>
-
-            {form.refund_requested && (
-              <div className="field" style={{ marginTop: 14, paddingBottom: 0 }}>
-                <label htmlFor="refund_requested_date">
-                  Date you requested the refund <span className="req">*</span>
-                  <span className="kn-sub">ಮರುಪಾವತಿ ಕೇಳಿದ ದಿನಾಂಕ</span>
+            <div className="row-num">
+              <div className="num">01</div>
+              <div className="field">
+                <label htmlFor="full_name">
+                  Full name <span className="req">*</span>
+                  <span className="kn-sub">ಪೂರ್ಣ ಹೆಸರು</span>
                 </label>
                 <input
-                  type="date"
-                  id="refund_requested_date"
-                  required={form.refund_requested}
-                  max={new Date().toISOString().split('T')[0]}
-                  value={form.refund_requested_date}
-                  onChange={(e) =>
-                    update('refund_requested_date', e.target.value)
-                  }
+                  type="text"
+                  id="full_name"
+                  required
+                  maxLength={120}
+                  placeholder="e.g. Ramesh K. / ರಮೇಶ್ ಕೆ."
+                  value={form.full_name}
+                  onChange={(e) => update('full_name', e.target.value)}
                 />
               </div>
-            )}
+            </div>
+
+            <div className="row-num">
+              <div className="num">02</div>
+              <div className="field">
+                <label htmlFor="mobile_number">
+                  Mobile number <span className="req">*</span>
+                  <span className="kn-sub">ಮೊಬೈಲ್ ಸಂಖ್ಯೆ</span>
+                </label>
+                <input
+                  type="tel"
+                  id="mobile_number"
+                  required
+                  inputMode="numeric"
+                  pattern="[0-9]{10}"
+                  maxLength={10}
+                  placeholder="10-digit number"
+                  value={form.mobile_number}
+                  onChange={(e) => update('mobile_number', e.target.value)}
+                />
+                <div className="hint">
+                  10 digits, no spaces &middot; used only to contact you
+                  about the complaint
+                </div>
+              </div>
+            </div>
+
+            <div className="row-num">
+              <div className="num">03</div>
+              <div className="field">
+                <label htmlFor="plot_number">
+                  Plot / site number
+                  <span className="kn-sub">ನಿವೇಶನ ಸಂಖ್ಯೆ</span>
+                </label>
+                <input
+                  type="text"
+                  id="plot_number"
+                  maxLength={40}
+                  placeholder="e.g. Site No. 214 (leave blank if unsure)"
+                  value={form.plot_number}
+                  onChange={(e) => update('plot_number', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="row-num">
+              <div className="num">04</div>
+              <div className="field">
+                <label htmlFor="applicant_status">
+                  You are a <span className="req">*</span>
+                  <span className="kn-sub">ನೀವು</span>
+                </label>
+                <select
+                  id="applicant_status"
+                  required
+                  value={form.applicant_status}
+                  onChange={(e) =>
+                    update('applicant_status', e.target.value)
+                  }
+                >
+                  <option value="" disabled>
+                    Select one
+                  </option>
+                  <option value="serving_army">
+                    Serving Army personnel &middot; ಸೇವೆಯಲ್ಲಿರುವ ಸೈನಿಕ
+                  </option>
+                  <option value="retired_army">
+                    Retired Army personnel &middot; ನಿವೃತ್ತ ಸೈನಿಕ
+                  </option>
+                  <option value="family">
+                    Family member of Army personnel &middot; ಸೈನಿಕರ ಕುಟುಂಬ
+                    ಸದಸ್ಯ
+                  </option>
+                  <option value="civilian">
+                    Civilian buyer &middot; ನಾಗರಿಕ ಖರೀದಿದಾರ
+                  </option>
+                  <option value="other">Other &middot; ಇತರೆ</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="row-num">
+              <div className="num">05</div>
+              <div className="field">
+                <label htmlFor="amount_paid">
+                  Total amount paid so far (₹)
+                  <span className="kn-sub">ಒಟ್ಟು ಪಾವತಿಸಿದ ಮೊತ್ತ</span>
+                </label>
+                <input
+                  type="number"
+                  id="amount_paid"
+                  min="0"
+                  step="1"
+                  placeholder="e.g. 250000"
+                  value={form.amount_paid}
+                  onChange={(e) => update('amount_paid', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="row-num">
+              <div className="num">06</div>
+              <div className="field">
+                <label htmlFor="purchase_year">
+                  Year of purchase
+                  <span className="kn-sub">ಖರೀದಿಸಿದ ವರ್ಷ</span>
+                </label>
+                <input
+                  type="number"
+                  id="purchase_year"
+                  min="2015"
+                  max="2026"
+                  step="1"
+                  placeholder="e.g. 2023"
+                  value={form.purchase_year}
+                  onChange={(e) => update('purchase_year', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="row-num">
+              <div className="num">07</div>
+              <div className="field">
+                <label htmlFor="village_taluk">
+                  Village / Taluk (optional)
+                  <span className="kn-sub">ಗ್ರಾಮ / ತಾಲೂಕು</span>
+                </label>
+                <input
+                  type="text"
+                  id="village_taluk"
+                  maxLength={80}
+                  value={form.village_taluk}
+                  onChange={(e) => update('village_taluk', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="refund-block">
+              <div className="refund-row">
+                <input
+                  type="checkbox"
+                  id="refund_requested"
+                  checked={form.refund_requested}
+                  onChange={(e) =>
+                    update('refund_requested', e.target.checked)
+                  }
+                />
+                <label htmlFor="refund_requested" className="refund-label">
+                  I requested a refund / booking cancellation and have{' '}
+                  <strong>not</strong> received it yet
+                  <span className="kn-sub" style={{ marginTop: 4 }}>
+                    ನಾನು ಹಣ ಮರುಪಾವತಿ / ಬುಕ್ಕಿಂಗ್ ರದ್ದತಿ ಕೇಳಿದ್ದೇನೆ, ಇನ್ನೂ
+                    ಸಿಕ್ಕಿಲ್ಲ
+                  </span>
+                </label>
+              </div>
+
+              {form.refund_requested && (
+                <div
+                  className="field"
+                  style={{ marginTop: 14, paddingBottom: 0 }}
+                >
+                  <label htmlFor="refund_requested_date">
+                    Date you requested the refund{' '}
+                    <span className="req">*</span>
+                    <span className="kn-sub">ಮರುಪಾವತಿ ಕೇಳಿದ ದಿನಾಂಕ</span>
+                  </label>
+                  <input
+                    type="date"
+                    id="refund_requested_date"
+                    required={form.refund_requested}
+                    max={new Date().toISOString().split('T')[0]}
+                    value={form.refund_requested_date}
+                    onChange={(e) =>
+                      update('refund_requested_date', e.target.value)
+                    }
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="row-num">
+              <div className="num">08</div>
+              <div className="field">
+                <label htmlFor="notes">
+                  Anything else you&apos;d like to add (optional)
+                  <span className="kn-sub">ಹೆಚ್ಚುವರಿ ಮಾಹಿತಿ</span>
+                </label>
+                <textarea
+                  id="notes"
+                  rows={3}
+                  maxLength={600}
+                  placeholder="e.g. refund promised on DD/MM/YYYY but not received"
+                  value={form.notes}
+                  onChange={(e) => update('notes', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="consent-block">
+              <div className="consent-row">
+                <input
+                  type="checkbox"
+                  id="consent_given"
+                  required
+                  checked={form.consent_given}
+                  onChange={(e) =>
+                    update('consent_given', e.target.checked)
+                  }
+                />
+                <p>
+                  I consent to my name, mobile number and plot number being
+                  included in the list of affected buyers submitted to the
+                  Superintendent of Police, Vijayapura District, in
+                  connection with this matter.
+                  <br />
+                  <span className="kn">
+                    ಈ ವಿಷಯಕ್ಕೆ ಸಂಬಂಧಿಸಿದಂತೆ ನನ್ನ ಹೆಸರು, ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಮತ್ತು
+                    ನಿವೇಶನ ಸಂಖ್ಯೆಯನ್ನು ಪೊಲೀಸ್ ಅಧೀಕ್ಷಕರಿಗೆ ಸಲ್ಲಿಸುವ ಪೀಡಿತ
+                    ಖರೀದಿದಾರರ ಪಟ್ಟಿಯಲ್ಲಿ ಸೇರಿಸಲು ನಾನು ಒಪ್ಪುತ್ತೇನೆ.
+                  </span>
+                </p>
+              </div>
+              <div
+                className="field"
+                style={{ marginTop: 14, paddingBottom: 0 }}
+              >
+                <label htmlFor="consent_name">
+                  Type your full name to confirm <span className="req">*</span>
+                  <span className="kn-sub">ದೃಢೀಕರಣಕ್ಕಾಗಿ ಹೆಸರು ಟೈಪ್ ಮಾಡಿ</span>
+                </label>
+                <input
+                  type="text"
+                  id="consent_name"
+                  required
+                  maxLength={120}
+                  value={form.consent_name}
+                  onChange={(e) => update('consent_name', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="submit-row">
+              <button type="submit" disabled={submitting}>
+                {submitting
+                  ? 'Adding…'
+                  : 'Add my details to the register  /  ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ'}
+              </button>
+              {status && (
+                <div id="status" className={status.type}>
+                  {status.text}
+                </div>
+              )}
+            </div>
+          </form>
+        </div>
+      )}
+
+      {activeTab === 'status' && (
+        <div className="wrap">
+          <section className="notice">
+            <h2>
+              Why this exists &middot; <span className="kn">ಏಕೆ</span>
+            </h2>
+            <p>
+              The demand is simple: either the developer completes the
+              development work that was promised, or refunds buyers who no
+              longer want to wait. This tracker lets any registered buyer
+              report what they have personally observed at the site, so
+              there&apos;s a running, crowd-sourced record — not just the
+              developer&apos;s word.
+            </p>
+            <p className="kn">
+              ಬೇಡಿಕೆ ಸರಳವಾಗಿದೆ: ಡೆವಲಪರ್ ಭರವಸೆ ನೀಡಿದ ಅಭಿವೃದ್ಧಿ ಕಾಮಗಾರಿಯನ್ನು
+              ಪೂರ್ಣಗೊಳಿಸಬೇಕು, ಇಲ್ಲದಿದ್ದರೆ ಕಾಯಲು ಬಯಸದ ಖರೀದಿದಾರರಿಗೆ ಹಣ
+              ಮರುಪಾವತಿಸಬೇಕು.
+            </p>
+          </section>
+
+          <div className="dev-progress-card">
+            <div className="dev-progress-label">
+              <span>Reported development progress</span>
+              <span className="dev-progress-pct">
+                {devStats ? `${devStats.avg_percent}%` : '—'}
+              </span>
+            </div>
+            <div className="dev-progress-track">
+              <div
+                className="dev-progress-fill"
+                style={{ width: `${devStats ? devStats.avg_percent : 0}%` }}
+              />
+            </div>
+            <div className="dev-progress-meta">
+              {devStats && devStats.report_count > 0
+                ? `Based on ${devStats.report_count} buyer report${
+                    devStats.report_count === 1 ? '' : 's'
+                  }`
+                : 'No reports yet — be the first to add one'}
+            </div>
           </div>
 
-          <div className="row-num">
-            <div className="num">08</div>
-            <div className="field">
-              <label htmlFor="notes">
-                Anything else you&apos;d like to add (optional)
-                <span className="kn-sub">ಹೆಚ್ಚುವರಿ ಮಾಹಿತಿ</span>
+          <form onSubmit={handleDevSubmit} className="dev-form">
+            <label className="dev-form-label">
+              How much of the promised development have you personally seen
+              completed?
+              <span className="kn-sub" style={{ marginTop: 4 }}>
+                ನೀವು ಸ್ವತಃ ಎಷ್ಟು ಅಭಿವೃದ್ಧಿ ಕಾಮಗಾರಿ ಪೂರ್ಣಗೊಂಡಿರುವುದನ್ನು
+                ಕಂಡಿದ್ದೀರಿ?
+              </span>
+            </label>
+            <div className="percent-options">
+              {PERCENT_OPTIONS.map((p) => (
+                <button
+                  type="button"
+                  key={p}
+                  className={
+                    devPercent === p
+                      ? 'percent-btn active'
+                      : 'percent-btn'
+                  }
+                  onClick={() => setDevPercent(p)}
+                >
+                  {p}%
+                </button>
+              ))}
+            </div>
+
+            <div className="field" style={{ marginTop: 16 }}>
+              <label htmlFor="dev_note">
+                Optional note (what you saw, when)
+                <span className="kn-sub">ಐಚ್ಛಿಕ ಟಿಪ್ಪಣಿ</span>
               </label>
               <textarea
-                id="notes"
-                rows={3}
-                maxLength={600}
-                placeholder="e.g. refund promised on DD/MM/YYYY but not received"
-                value={form.notes}
-                onChange={(e) => update('notes', e.target.value)}
+                id="dev_note"
+                rows={2}
+                maxLength={400}
+                placeholder="e.g. visited in July 2026, still no water connection"
+                value={devNote}
+                onChange={(e) => setDevNote(e.target.value)}
               />
             </div>
+
+            <div className="submit-row" style={{ padding: '14px 0 0' }}>
+              <button type="submit" disabled={devSubmitting}>
+                {devSubmitting ? 'Submitting…' : 'Submit my observation'}
+              </button>
+              {devStatus && (
+                <div id="status" className={devStatus.type}>
+                  {devStatus.text}
+                </div>
+              )}
+            </div>
+          </form>
+        </div>
+      )}
+
+      {activeTab === 'letter' && (
+        <div className="wrap">
+          <section className="notice">
+            <h2>
+              Complaint letter &middot; <span className="kn">ದೂರು ಪತ್ರ</span>
+            </h2>
+            <p>
+              This is the draft petition being prepared for the
+              Superintendent of Police, Vijayapura District. You can read it
+              below or download a copy.
+            </p>
+          </section>
+
+          <div className="pdf-actions">
+            <a
+              href="/complaint-letter.pdf"
+              download
+              className="download-btn"
+            >
+              ⬇ Download PDF &middot; <span className="kn">ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</span>
+            </a>
           </div>
 
-          <div className="consent-block">
-            <div className="consent-row">
-              <input
-                type="checkbox"
-                id="consent_given"
-                required
-                checked={form.consent_given}
-                onChange={(e) => update('consent_given', e.target.checked)}
-              />
-              <p>
-                I consent to my name, mobile number and plot number being
-                included in the list of affected buyers submitted to the
-                Superintendent of Police, Vijayapura District, in connection
-                with this matter.
-                <br />
-                <span className="kn">
-                  ಈ ವಿಷಯಕ್ಕೆ ಸಂಬಂಧಿಸಿದಂತೆ ನನ್ನ ಹೆಸರು, ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಮತ್ತು
-                  ನಿವೇಶನ ಸಂಖ್ಯೆಯನ್ನು ಪೊಲೀಸ್ ಅಧೀಕ್ಷಕರಿಗೆ ಸಲ್ಲಿಸುವ ಪೀಡಿತ
-                  ಖರೀದಿದಾರರ ಪಟ್ಟಿಯಲ್ಲಿ ಸೇರಿಸಲು ನಾನು ಒಪ್ಪುತ್ತೇನೆ.
-                </span>
+          <div className="pdf-embed">
+            <object
+              data="/complaint-letter.pdf"
+              type="application/pdf"
+              width="100%"
+              height="100%"
+            >
+              <p style={{ padding: 20 }}>
+                Your browser can&apos;t preview PDFs inline.{' '}
+                <a href="/complaint-letter.pdf" download>
+                  Download the letter directly
+                </a>
+                .
               </p>
-            </div>
-            <div className="field" style={{ marginTop: 14, paddingBottom: 0 }}>
-              <label htmlFor="consent_name">
-                Type your full name to confirm <span className="req">*</span>
-                <span className="kn-sub">ದೃಢೀಕರಣಕ್ಕಾಗಿ ಹೆಸರು ಟೈಪ್ ಮಾಡಿ</span>
-              </label>
-              <input
-                type="text"
-                id="consent_name"
-                required
-                maxLength={120}
-                value={form.consent_name}
-                onChange={(e) => update('consent_name', e.target.value)}
-              />
-            </div>
+            </object>
           </div>
-
-          <div className="submit-row">
-            <button type="submit" disabled={submitting}>
-              {submitting
-                ? 'Adding…'
-                : 'Add my details to the register  /  ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ'}
-            </button>
-            {status && <div id="status" className={status.type}>{status.text}</div>}
-          </div>
-        </form>
-      </div>
+        </div>
+      )}
 
       <footer className="foot">
         This is an independent register maintained by affected buyers of
