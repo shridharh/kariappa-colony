@@ -276,6 +276,13 @@ export default function Page() {
             >
               Complaint Letter &middot; <span className="kn">ದೂರು ಪತ್ರ</span>
             </button>
+            <button
+              className={activeTab === 'about' ? 'tab active' : 'tab'}
+              onClick={() => setActiveTab('about')}
+              type="button"
+            >
+              About this site &middot; <span className="kn">ಜಾಲತಾಣದ ಬಗ್ಗೆ</span>
+            </button>
           </div>
         </nav>
       </header>
@@ -735,6 +742,101 @@ export default function Page() {
               </p>
             </object>
           </div>
+        </div>
+      )}
+
+      {activeTab === 'about' && (
+        <div className="wrap">
+          <section className="notice">
+            <h2>
+              Why this website exists &middot;{' '}
+              <span className="kn">ಈ ಜಾಲತಾಣ ಏಕೆ</span>
+            </h2>
+            <p>
+              Many of the affected buyers are serving or retired army
+              personnel posted in different locations, not all in
+              Vijayapura. A physical signature sheet would take months to
+              circulate. This site lets any affected buyer add their name,
+              mobile number, and plot number in under a minute from their
+              phone, so a complete list could be compiled quickly for the
+              complaint to the Superintendent of Police.
+            </p>
+            <p className="kn">
+              ಪೀಡಿತ ಖರೀದಿದಾರರಲ್ಲಿ ಅನೇಕರು ಸೇವೆಯಲ್ಲಿರುವ ಅಥವಾ ನಿವೃತ್ತ
+              ಸೈನಿಕರಾಗಿದ್ದು, ವಿವಿಧ ಸ್ಥಳಗಳಲ್ಲಿ ನೆಲೆಸಿದ್ದಾರೆ — ಎಲ್ಲರೂ
+              ವಿಜಯಪುರದಲ್ಲಿ ಇಲ್ಲ. ಭೌತಿಕ ಸಹಿ ಪಟ್ಟಿ ಸಂಗ್ರಹಿಸಲು ತಿಂಗಳುಗಳೇ
+              ಬೇಕಾಗುತ್ತಿತ್ತು. ಈ ಜಾಲತಾಣದ ಮೂಲಕ ಯಾವುದೇ ಪೀಡಿತ ಖರೀದಿದಾರರು ಒಂದು
+              ನಿಮಿಷದೊಳಗೆ ತಮ್ಮ ಹೆಸರು, ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಮತ್ತು ನಿವೇಶನ ಸಂಖ್ಯೆಯನ್ನು
+              ಸೇರಿಸಬಹುದು.
+            </p>
+          </section>
+
+          <section className="notice">
+            <h2>
+              What information is collected, and why &middot;{' '}
+              <span className="kn">ಯಾವ ಮಾಹಿತಿ, ಏಕೆ</span>
+            </h2>
+            <p>
+              Name, mobile number, plot number, amount paid, and whether a
+              refund has been requested — exactly the information the
+              complaint&apos;s annexure list requires (ಕ್ರಮ ಸಂಖ್ಯೆ / ಹೆಸರು /
+              ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / ನಿವೇಶನ ಸಂಖ್ಯೆ). Each person explicitly
+              consents before submitting, and types their name to confirm.
+            </p>
+            <p className="kn">
+              ಹೆಸರು, ಮೊಬೈಲ್ ಸಂಖ್ಯೆ, ನಿವೇಶನ ಸಂಖ್ಯೆ, ಪಾವತಿಸಿದ ಮೊತ್ತ, ಮತ್ತು
+              ಮರುಪಾವತಿ ಕೇಳಿದ್ದಾರೆಯೇ ಎಂಬ ಮಾಹಿತಿ — ದೂರಿನ ಲಗತ್ತಿಗೆ
+              ಅಗತ್ಯವಿರುವ ಮಾಹಿತಿ ಮಾತ್ರ. ಪ್ರತಿಯೊಬ್ಬರೂ ಸಲ್ಲಿಸುವ ಮೊದಲು
+              ಸ್ಪಷ್ಟವಾಗಿ ಒಪ್ಪಿಗೆ ನೀಡುತ್ತಾರೆ ಮತ್ತು ದೃಢೀಕರಣಕ್ಕಾಗಿ ತಮ್ಮ ಹೆಸರು
+              ಟೈಪ್ ಮಾಡುತ್ತಾರೆ.
+            </p>
+          </section>
+
+          <section className="notice">
+            <h2>
+              What happens to the data &middot;{' '}
+              <span className="kn">ಮಾಹಿತಿಗೆ ಏನಾಗುತ್ತದೆ</span>
+            </h2>
+            <p>
+              It is stored in a private database that only the organizing
+              group can access — the website itself cannot show anyone
+              their own or anyone else&apos;s entries back. It will be
+              compiled into the printed list attached to the police
+              complaint. Physical, wet-ink signatures will still be
+              collected from each person before the complaint is formally
+              filed — this site is how the list was compiled quickly, not a
+              replacement for actual signatures. The data is not used
+              commercially, sold, or shared with any third party.
+            </p>
+            <p className="kn">
+              ಇದನ್ನು ಖಾಸಗಿ ಡೇಟಾಬೇಸ್‌ನಲ್ಲಿ ಸಂಗ್ರಹಿಸಲಾಗಿದ್ದು, ಸಂಘಟಿಸುತ್ತಿರುವ
+              ಗುಂಪು ಮಾತ್ರ ಅದನ್ನು ಪ್ರವೇಶಿಸಬಹುದು. ಇದನ್ನು ಪೊಲೀಸ್ ದೂರಿನ
+              ಲಗತ್ತಿಗಾಗಿ ಮುದ್ರಿತ ಪಟ್ಟಿಯಾಗಿ ಸಂಕಲಿಸಲಾಗುವುದು. ದೂರು ಸಲ್ಲಿಸುವ
+              ಮೊದಲು ಪ್ರತಿಯೊಬ್ಬರಿಂದ ಭೌತಿಕ ಸಹಿಯನ್ನು ಪ್ರತ್ಯೇಕವಾಗಿ
+              ಸಂಗ್ರಹಿಸಲಾಗುವುದು. ಈ ಮಾಹಿತಿಯನ್ನು ವಾಣಿಜ್ಯ ಉದ್ದೇಶಕ್ಕೆ
+              ಬಳಸುವುದಿಲ್ಲ, ಮಾರಾಟ ಮಾಡುವುದಿಲ್ಲ, ಅಥವಾ ಯಾವುದೇ ಮೂರನೇ ವ್ಯಕ್ತಿಗೆ
+              ಹಂಚಿಕೊಳ್ಳುವುದಿಲ್ಲ.
+            </p>
+          </section>
+
+          <section className="notice">
+            <h2>
+              A note on the Development Status numbers &middot;{' '}
+              <span className="kn">ಅಭಿವೃದ್ಧಿ ಸ್ಥಿತಿ ಬಗ್ಗೆ ಟಿಪ್ಪಣಿ</span>
+            </h2>
+            <p>
+              The percentages on the Development Status tab are
+              self-reported observations from buyers who visited the site,
+              not verified survey data or an official audit. Useful as a
+              general signal of what people are seeing on the ground, but
+              not proof on its own.
+            </p>
+            <p className="kn">
+              ಅಭಿವೃದ್ಧಿ ಸ್ಥಿತಿ ಟ್ಯಾಬ್‌ನಲ್ಲಿನ ಶೇಕಡಾವಾರುಗಳು ಸ್ಥಳಕ್ಕೆ
+              ಭೇಟಿ ನೀಡಿದ ಖರೀದಿದಾರರ ಸ್ವಯಂ-ವರದಿ ಮಾಡಿದ ಅವಲೋಕನಗಳಾಗಿವೆ —
+              ಪರಿಶೀಲಿಸಿದ ಸಮೀಕ್ಷಾ ಮಾಹಿತಿ ಅಥವಾ ಅಧಿಕೃತ ಲೆಕ್ಕಪರಿಶೋಧನೆ ಅಲ್ಲ.
+            </p>
+          </section>
         </div>
       )}
 
