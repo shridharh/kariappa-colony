@@ -847,9 +847,7 @@ export default function Page() {
       )}
 
       <footer className="foot">
-        This is an independent register maintained by affected buyers of
-        Field Marshal Kariyappa Colony. It is not an official Karnataka
-        Police or government website.
+      This is an independent register maintained by affected buyers of Field Marshal Kariyappa Colony. It is not an official government website
       </footer>
     </>
   );
