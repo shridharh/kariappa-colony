@@ -201,8 +201,7 @@ export default function Page() {
           <div className="eyebrow">Buyer Registry &middot; ಖರೀದಿದಾರರ ನೋಂದಣಿ</div>
           <h1>
             <span className="kn-line">ಫೀಲ್ಡ್ ಮಾರ್ಷಲ್ ಕರಿಯಪ್ಪ ಕಾಲೋನಿ</span>
-            Affected Buyers — Tell Us Your Situation
-
+            Affected Buyers — Sign the Register
           </h1>
           <p className="sub kn">
             ಈ ಯೋಜನೆಯಿಂದ ಎಷ್ಟು ಖರೀದಿದಾರರು ಪೀಡಿತರಾಗಿದ್ದಾರೆ ಎಂಬುದರ ದಾಖಲೆ
@@ -619,15 +618,17 @@ export default function Page() {
             <p>
               The demand is simple: either the developer completes the
               development work that was promised, or refunds buyers who no
-              longer want to wait. This tracker lets any registered buyer
-              report what they have personally observed at the site, so
-              there&apos;s a running, crowd-sourced record — not just the
-              developer&apos;s word.
+              longer want to wait — with interest, since this money has
+              been held for years without the promised development. This
+              tracker lets any registered buyer report what they have
+              personally observed at the site, so there&apos;s a running,
+              crowd-sourced record — not just the developer&apos;s word.
             </p>
             <p className="kn">
               ಬೇಡಿಕೆ ಸರಳವಾಗಿದೆ: ಡೆವಲಪರ್ ಭರವಸೆ ನೀಡಿದ ಅಭಿವೃದ್ಧಿ ಕಾಮಗಾರಿಯನ್ನು
-              ಪೂರ್ಣಗೊಳಿಸಬೇಕು, ಇಲ್ಲದಿದ್ದರೆ ಕಾಯಲು ಬಯಸದ ಖರೀದಿದಾರರಿಗೆ ಹಣ
-              ಮರುಪಾವತಿಸಬೇಕು.
+              ಪೂರ್ಣಗೊಳಿಸಬೇಕು, ಇಲ್ಲದಿದ್ದರೆ ಕಾಯಲು ಬಯಸದ ಖರೀದಿದಾರರಿಗೆ ಬಡ್ಡಿ
+              ಸಮೇತ ಹಣ ಮರುಪಾವತಿಸಬೇಕು — ಏಕೆಂದರೆ ಭರವಸೆ ನೀಡಿದ ಅಭಿವೃದ್ಧಿ ಇಲ್ಲದೆ
+              ಈ ಹಣವನ್ನು ವರ್ಷಗಳಿಂದ ಇಟ್ಟುಕೊಳ್ಳಲಾಗಿದೆ.
             </p>
           </section>
 
