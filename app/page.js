@@ -11,6 +11,8 @@ const initialForm = {
   amount_paid: '',
   purchase_year: '',
   village_taluk: '',
+  refund_requested: false,
+  refund_requested_date: '',
   notes: '',
   consent_given: false,
   consent_name: '',
@@ -19,7 +21,7 @@ const initialForm = {
 
 export default function Page() {
   const [form, setForm] = useState(initialForm);
-  const [stats, setStats] = useState(null); // { total_count, total_amount }
+  const [stats, setStats] = useState(null); // { total_count, total_amount, refund_pending_count, oldest_refund_days }
   const [status, setStatus] = useState(null); // { type: 'ok' | 'err', text }
   const [submitting, setSubmitting] = useState(false);
 
@@ -37,6 +39,20 @@ export default function Page() {
 
   function formatRupees(n) {
     return '₹' + Number(n || 0).toLocaleString('en-IN');
+  }
+
+  function formatDuration(days) {
+    const d = Number(days || 0);
+    if (d < 30) return `${d} day${d === 1 ? '' : 's'}`;
+    if (d < 365) {
+      const months = Math.round(d / 30);
+      return `${months} month${months === 1 ? '' : 's'}`;
+    }
+    const years = Math.floor(d / 365);
+    const remMonths = Math.round((d % 365) / 30);
+    return remMonths > 0
+      ? `${years} yr${years === 1 ? '' : 's'} ${remMonths} mo`
+      : `${years} yr${years === 1 ? '' : 's'}`;
   }
 
   function update(field, value) {
@@ -64,6 +80,13 @@ export default function Page() {
       });
       return;
     }
+    if (form.refund_requested && !form.refund_requested_date) {
+      setStatus({
+        type: 'err',
+        text: 'Please enter the date you requested the refund. / ದಯವಿಟ್ಟು ಮರುಪಾವತಿ ಕೇಳಿದ ದಿನಾಂಕ ನಮೂದಿಸಿ.',
+      });
+      return;
+    }
     if (!supabase) {
       setStatus({
         type: 'err',
@@ -82,6 +105,10 @@ export default function Page() {
         amount_paid: form.amount_paid ? Number(form.amount_paid) : null,
         purchase_year: form.purchase_year ? Number(form.purchase_year) : null,
         village_taluk: form.village_taluk.trim() || null,
+        refund_requested: form.refund_requested,
+        refund_requested_date: form.refund_requested
+          ? form.refund_requested_date
+          : null,
         notes: form.notes.trim() || null,
         consent_given: form.consent_given,
         consent_name: form.consent_name.trim(),
@@ -125,15 +152,33 @@ export default function Page() {
             complaint to the Superintendent of Police, Vijayapura District.
             Add your details below — it takes about a minute.
           </p>
-          <div className="register-count">
-            <span className="dot"></span>
-            <span>
-              {stats === null
-                ? 'Register open — be one of the first to sign'
-                : `${stats.total_count} buyers registered · ${formatRupees(
-                    stats.total_amount
-                  )} reported paid so far`}
-            </span>
+
+          <div className="pill-row">
+            <div className="register-count">
+              <span className="dot"></span>
+              <span>
+                {stats === null
+                  ? 'Register open — be one of the first to sign'
+                  : `${stats.total_count} buyers registered · ${formatRupees(
+                      stats.total_amount
+                    )} reported paid so far`}
+              </span>
+            </div>
+
+            {stats && stats.refund_pending_count > 0 && (
+              <div className="register-count alert">
+                <span className="dot"></span>
+                <span>
+                  ⚠ {stats.refund_pending_count} refund
+                  {stats.refund_pending_count === 1 ? '' : 's'} still pending
+                  {stats.oldest_refund_days > 0
+                    ? ` · oldest waiting ${formatDuration(
+                        stats.oldest_refund_days
+                      )}`
+                    : ''}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -330,6 +375,46 @@ export default function Page() {
                 onChange={(e) => update('village_taluk', e.target.value)}
               />
             </div>
+          </div>
+
+          <div className="refund-block">
+            <div className="refund-row">
+              <input
+                type="checkbox"
+                id="refund_requested"
+                checked={form.refund_requested}
+                onChange={(e) =>
+                  update('refund_requested', e.target.checked)
+                }
+              />
+              <label htmlFor="refund_requested" className="refund-label">
+                I requested a refund / booking cancellation and have{' '}
+                <strong>not</strong> received it yet
+                <span className="kn-sub" style={{ marginTop: 4 }}>
+                  ನಾನು ಹಣ ಮರುಪಾವತಿ / ಬುಕ್ಕಿಂಗ್ ರದ್ದತಿ ಕೇಳಿದ್ದೇನೆ, ಇನ್ನೂ
+                  ಸಿಕ್ಕಿಲ್ಲ
+                </span>
+              </label>
+            </div>
+
+            {form.refund_requested && (
+              <div className="field" style={{ marginTop: 14, paddingBottom: 0 }}>
+                <label htmlFor="refund_requested_date">
+                  Date you requested the refund <span className="req">*</span>
+                  <span className="kn-sub">ಮರುಪಾವತಿ ಕೇಳಿದ ದಿನಾಂಕ</span>
+                </label>
+                <input
+                  type="date"
+                  id="refund_requested_date"
+                  required={form.refund_requested}
+                  max={new Date().toISOString().split('T')[0]}
+                  value={form.refund_requested_date}
+                  onChange={(e) =>
+                    update('refund_requested_date', e.target.value)
+                  }
+                />
+              </div>
+            )}
           </div>
 
           <div className="row-num">
