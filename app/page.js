@@ -204,13 +204,17 @@ export default function Page() {
             Affected Buyers — Sign the Register
           </h1>
           <p className="sub kn">
-            ಪೊಲೀಸ್ ಅಧೀಕ್ಷಕರಿಗೆ ಸಲ್ಲಿಸಲಾಗುವ ಮನವಿಗಾಗಿ ಪೀಡಿತ ಖರೀದಿದಾರರ ಪಟ್ಟಿ
-            ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ. ನಿಮ್ಮ ವಿವರಗಳನ್ನು ಕೆಳಗೆ ಸೇರಿಸಿ.
+            ಈ ಯೋಜನೆಯಿಂದ ಎಷ್ಟು ಖರೀದಿದಾರರು ಪೀಡಿತರಾಗಿದ್ದಾರೆ ಎಂಬುದರ ದಾಖಲೆ
+            ಇಟ್ಟುಕೊಳ್ಳಲು ಈ ನೋಂದಣಿಯನ್ನು ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ. ಅಗತ್ಯವಿದ್ದಲ್ಲಿ
+            ಮುಂದೆ ಪೊಲೀಸ್ ಅಧೀಕ್ಷಕರಿಗೆ ಸಲ್ಲಿಸುವ ಮನವಿಗೆ ಇದನ್ನು ಬಳಸಬಹುದು.
           </p>
           <p className="sub">
-            We&apos;re building the list of affected buyers to attach to the
-            complaint to the Superintendent of Police, Vijayapura District.
-            Add your details below — it takes about a minute.
+            We&apos;re keeping a record of how many buyers have been
+            affected by this project. This may be used later to support a
+            formal complaint to the Superintendent of Police, Vijayapura
+            District, if it becomes necessary — for now, we just need an
+            accurate count. Add your details below — it takes about a
+            minute.
           </p>
 
           <div className="pill-row">
@@ -471,7 +475,7 @@ export default function Page() {
               <div className="num">07</div>
               <div className="field">
                 <label htmlFor="village_taluk">
-                  City / Village / Taluk (optional)
+                  Village / Taluk (optional)
                   <span className="kn-sub">ಗ್ರಾಮ / ತಾಲೂಕು</span>
                 </label>
                 <input
