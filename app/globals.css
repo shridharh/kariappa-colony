@@ -99,30 +99,37 @@ h1 .kn-line {
   background: #8c6d1f;
 }
 .register-count.alert {
-  border-color: #c23b22;
-  background: #f4a261;
-  color: #5c2410;
+  border-color: #d32f2f;
+  background: #ffffff;
+  color: #b71c1c;
+  font-weight: 700;
 }
 .register-count.alert .dot {
-  background: #c23b22;
-  animation: pulse-dot 2s ease-in-out infinite;
+  width: 9px;
+  height: 9px;
+  background: #d32f2f;
+  position: relative;
+  animation: pulse-ring 1.6s cubic-bezier(0.66, 0, 0, 1) infinite;
+}
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 9px rgba(211, 47, 47, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(211, 47, 47, 0);
+  }
 }
 .register-count.info {
   border-color: #5b7a9c;
-  background: #dceaf4;
+  background: #eaf3fa;
   color: #1f3a52;
+  font-weight: 700;
 }
 .register-count.info .dot {
   background: #3d6e96;
-}
-@keyframes pulse-dot {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.35;
-  }
 }
 
 .tab-bar {
